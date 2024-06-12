@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generative AI Example</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center">Generative AI Story Generator</h1>
+        <div class="row justify-content-center mt-4">
+            <div class="col-md-8">
+                <form id="storyForm">
+                    <div class="form-group">
+                        <label for="userPrompt">Enter your prompt:</label>
+                        <input type="text" class="form-control" id="userPrompt" placeholder="Write a story about a magic backpack" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Generate Story</button>
+                </form>
+                <div class="mt-4">
+                    <h3>Generated Story:</h3>
+                    <p id="generatedStory" class="border p-3"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="importmap">
+      {
+        "imports": {
+          "@google/generative-ai": "https://esm.run/@google/generative-ai"
+        }
+      }
+    </script>
+    <script type="module">
+      import { GoogleGenerativeAI } from "@google/generative-ai";
+
+      document.getElementById('storyForm').addEventListener('submit', async function(event) {
+        event.preventDefault();
+        const userPrompt = document.getElementById('userPrompt').value;
+        const API_KEY = "AIzaSyCKlNlLO_zSqOQXV3RU1Sw0hV0fT5HtJvk";
+        const genAI = new GoogleGenerativeAI(API_KEY);
+        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
+        try {
+          const result = await model.generateContent(userPrompt);
+          // Assuming the response structure as per your example
+          const content = result.response.candidates[0].content.parts.map(part => {
+            let text = part.text;
+            // Apply formatting based on keywords in the text
+            text = text.replace(/\*\*(.*?)\*\*/g, '<br><strong>$1</strong>'); // Bold
+            text = text.replace(/\*(.*?)\*/g, '<br><em>$1</em>'); // Italic
+            return text;
+          }).join("\n");
+          document.getElementById('generatedStory').innerHTML = content;
+        } catch (error) {
+          document.getElementById('generatedStory').innerText = "Error generating content: " + error;
+        }
+      });
+    </script>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
