@@ -1,6 +1,6 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-const API_KEY = "AIzaSyCKlNlLO_zSqOQXV3RU1Sw0hV0fT5HtJvk";
+const API_KEY = "";
 // Reminder: This should only be for local testing
 
 // Access your API key (see "Set up your API key" above)
