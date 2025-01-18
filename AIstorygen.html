@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Story Generator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      padding: 20px;
+    }
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+    form {
+      margin-bottom: 20px;
+    }
+    textarea {
+      width: 100%;
+      height: 80px;
+      margin-bottom: 10px;
+      padding: 10px;
+      font-size: 16px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      resize: none;
+    }
+    button {
+      width: 100%;
+      padding: 10px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    .story-output {
+      padding: 15px;
+      background: #e9ecef;
+      border-radius: 6px;
+      white-space: pre-line;
+      word-wrap: break-word;
+    }
+    .error {
+      color: red;
+      font-weight: bold;
+    }
+  </style>
+  <script type="importmap">
+    {
+      "imports": {
+        "@google/generative-ai": "https://esm.run/@google/generative-ai"
+      }
+    }
+  </script>
+</head>
+<body>
+  <div class="container">
+    <h1>AI Story Generator</h1>
+    <form id="storyForm">
+      <textarea id="userPrompt" placeholder="Enter your story prompt here..."></textarea>
+      <button type="submit">Generate Story</button>
+    </form>
+    <div id="generatedStory" class="story-output"></div>
+  </div>
+
+  <script type="module">
+    import { GoogleGenerativeAI } from "@google/generative-ai";
+
+    document.getElementById('storyForm').addEventListener('submit', async function(event) {
+      event.preventDefault();
+      const userPrompt = document.getElementById('userPrompt').value;
+      const API_KEY = "AIzaSyBFrKMXHRJyDL7uMBzuZtmVctXFZMnZScA"; // Replace with your actual API key
+      const genAI = new GoogleGenerativeAI(API_KEY);
+      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
+      try {
+        const result = await model.generateContent(userPrompt);
+        // Process and format AI-generated content
+        const content = result.response.candidates[0].content.parts.map(part => {
+          let text = part.text;
+          // Apply formatting for bold and italic
+          text = text.replace(/\*\*(.*?)\*\*/g, '<br><strong>$1</strong>'); // Bold
+          text = text.replace(/\*(.*?)\*/g, '<br><em>$1</em>'); // Italic
+          return text;
+        }).join("\n");
+
+        document.getElementById('generatedStory').innerHTML = content; // Display formatted content
+      } catch (error) {
+        document.getElementById('generatedStory').innerHTML = `<p class="error">Error generating content: ${error.message}</p>`;
+        console.error(error);
+      }
+    });
+  </script>
+</body>
+</html>
